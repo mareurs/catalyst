@@ -33,7 +33,7 @@ def initialize(context):
     # parameters or values you're going to use.
 
     # In our example, we're looking at Neo in Ether.
-    context.market = symbol('eth_btc')
+    context.market = symbol('btc_usd')
     context.base_price = None
     context.current_day = None
 
@@ -280,7 +280,7 @@ if __name__ == '__main__':
             analyze=analyze,
             exchange_name='bitfinex',
             algo_namespace=NAMESPACE,
-            base_currency='eth',
+            base_currency='btc',
             start=pd.to_datetime('2017-10-01', utc=True),
             end=pd.to_datetime('2017-11-10', utc=True),
             output=out
