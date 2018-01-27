@@ -32,7 +32,7 @@ log = Logger(algo_namespace)
 def initialize(context):
     log.info('Starting TALib Simple Example')
 
-    context.ASSET_NAME = 'BTC_USDT'
+    context.ASSET_NAME = 'BTC_USD'
     context.asset = symbol(context.ASSET_NAME)
 
     context.ORDER_SIZE = 10
@@ -225,12 +225,12 @@ def isBuy(context, analysis):
             return True
 
     # # Bullish Stochastics
-    # if(getLast(analysis, 'stoch_over_sold') == 1):
-    #     return True
+#    if(getLast(analysis, 'stoch_over_sold') == 1):
+#        return True
 
     # # Bullish RSI
-    # if(getLast(analysis, 'rsi_over_sold') == 1):
-    #     return True
+#    if(getLast(analysis, 'rsi_over_sold') == 1):
+#        return True
 
     return False
 
@@ -243,12 +243,12 @@ def isSell(context, analysis):
             return True
 
     # # Bearish Stochastics
-    # if(getLast(analysis, 'stoch_over_bought') == 0):
-    #     return True
+#    if(getLast(analysis, 'stoch_over_bought') == 0):
+#        return True
 
     # # Bearish RSI
-    # if(getLast(analysis, 'rsi_over_bought') == 0):
-    #     return True
+#    if(getLast(analysis, 'rsi_over_bought') == 0):
+#        return True
 
     return False
 
@@ -359,8 +359,8 @@ if __name__ == '__main__':
         initialize=initialize,
         handle_data=handle_data,
         analyze=analyze,
-        exchange_name='poloniex',
+        exchange_name='bitfinex',
         base_currency='usdt',
-        start=pd.to_datetime('2016-11-1', utc=True),
-        end=pd.to_datetime('2017-11-10', utc=True),
+        start=pd.to_datetime('2017-12-15', utc=True),
+        end=pd.to_datetime('2017-12-25', utc=True),
     )

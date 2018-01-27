@@ -19,7 +19,7 @@ from catalyst.exchange.utils.stats_utils import extract_transactions
 # state using the files included in the folder.
 from catalyst.utils.paths import ensure_directory
 
-NAMESPACE = 'mean_reversion_simple'
+NAMESPACE = 'mean_reversion_simple_live'
 log = Logger(NAMESPACE)
 
 
@@ -33,19 +33,20 @@ def initialize(context):
     # parameters or values you're going to use.
 
     # In our example, we're looking at Neo in Ether.
-    context.market = symbol('btc_usd')
+    context.market = symbol('btc_usdt')
     context.base_price = None
     context.current_day = None
 
-    context.RSI_OVERSOLD = 50
-    context.RSI_OVERBOUGHT = 60
+    context.RSI_OVERSOLD = 30
+    context.RSI_OVERBOUGHT = 70
     context.CANDLE_SIZE = '5T'
 
     context.start_time = time.time()
 
-    context.set_commission(maker=0.001, taker=0.002)
+    context.set_commission(maker=0.0005, taker=0.0005)
     # context.set_slippage(spread=0.001)
 
+    context.previous_price=-1
 
 def handle_data(context, data):
     # This handle_data function is where the real work is done.  Our data is
@@ -108,8 +109,8 @@ def handle_data(context, data):
     )
     # We are trying to avoid over-trading by limiting our trades to
     # one per day.
-    if context.traded_today:
-        return
+    #if context.traded_today:
+    #    return
 
     # TODO: retest with open orders
     # Since we are using limit orders, some orders may not execute immediately
@@ -141,8 +142,13 @@ def handle_data(context, data):
             context.market, 1, limit_price=limit_price
         )
         context.traded_today = True
+        context.previous_price = price
 
     elif rsi[-1] >= context.RSI_OVERBOUGHT and pos_amount > 0:
+        if price < context.previous_price * 0.95:
+            log.info('Not selling at {} since I bought at {}'.format(price, context.previous_price))
+            return
+
         log.info(
             '{}: selling - price: {}, rsi: {}'.format(
                 data.current_dt, price, rsi[-1]
@@ -244,15 +250,15 @@ def analyze(context=None, perf=None):
 
 if __name__ == '__main__':
     # The execution mode: backtest or live
-    live = False
+    live = True
 
     if live:
         run_algorithm(
-            capital_base=0.025,
+            capital_base=0.01,
             initialize=initialize,
             handle_data=handle_data,
             analyze=analyze,
-            exchange_name='poloniex',
+            exchange_name='binance',
             live=True,
             algo_namespace=NAMESPACE,
             base_currency='btc',
@@ -281,8 +287,8 @@ if __name__ == '__main__':
             exchange_name='bitfinex',
             algo_namespace=NAMESPACE,
             base_currency='btc',
-            start=pd.to_datetime('2017-10-01', utc=True),
-            end=pd.to_datetime('2017-11-10', utc=True),
+            start=pd.to_datetime('2018-01-01', utc=True),
+            end=pd.to_datetime('2018-01-15', utc=True),
             output=out
-        )
+            )
         log.info('saved perf stats: {}'.format(out))
